@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#10111b">
+<title>Petit Bac — La roue du jour</title>
+<style>
+:root{--bg:#10111b;--panel:#1b1e30;--ink:#f8f8ff;--muted:#aeb2c8;--lime:#c4ff43;--pink:#ff5798}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:24px 15px 40px;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(ellipse at 50% -10%,#44326d 0,transparent 48%),var(--bg)}
+main{max-width:780px;margin:auto}header{text-align:center;padding:20px 0 24px} .eyebrow{font-size:.75rem;letter-spacing:.22em;color:var(--lime);font-weight:900}h1{font-size:clamp(2.8rem,10vw,5.3rem);line-height:.95;letter-spacing:-.07em;margin:12px 0}h1 span{color:var(--lime)}header p{color:var(--muted);margin:12px 0}.date{display:inline-block;padding:8px 14px;border:1px solid #ffffff24;border-radius:99px;color:var(--lime);font-size:.85rem}
+.panel{background:linear-gradient(145deg,#242740,#191b2b);border:1px solid #ffffff1c;border-radius:28px;padding:clamp(15px,4vw,28px);box-shadow:0 24px 70px #0006}
+.wheelbox{width:min(84vw,440px);aspect-ratio:1;margin:0 auto 18px;position:relative}.wheelbox canvas{width:100%;height:100%;display:block;filter:drop-shadow(0 14px 20px #0008)}.pointer{position:absolute;z-index:3;top:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:17px solid transparent;border-right:17px solid transparent;border-top:34px solid var(--lime);filter:drop-shadow(0 3px 3px #0008)}.hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:24%;aspect-ratio:1;border-radius:50%;display:grid;place-content:center;text-align:center;background:#171927;border:5px solid var(--lime);color:var(--lime);font-weight:1000;line-height:1.05;box-shadow:0 4px 22px #0009}
+button{border:0;border-radius:15px;padding:15px 19px;font-weight:900;font-size:1rem;cursor:pointer;transition:transform .12s,filter .12s}button:active{transform:scale(.97)}button:disabled{opacity:.55;cursor:wait}.primary{display:block;width:min(100%,350px);margin:0 auto;background:var(--lime);color:#171927;box-shadow:0 6px 0 #83ae25}.subbtn{background:#ffffff12;color:var(--ink);border:1px solid #ffffff20;font-size:.9rem;padding:11px 15px}.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}.result{text-align:center;min-height:110px;padding:22px 0 2px}.result small{font-size:.72rem;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;font-weight:800}.result h2{font-size:clamp(2rem,7vw,3rem);margin:6px 0;color:var(--lime);letter-spacing:-.04em}.letter{color:var(--pink);font-weight:950;font-size:1.25rem;min-height:28px}.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}.note{padding:17px;border:1px solid #ffffff14;background:#ffffff09;border-radius:18px}.note b{display:block;margin-bottom:6px}.note p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.5}footer{text-align:center;color:#858aa4;font-size:.8rem;margin:20px 0}@media(max-width:520px){.cards{grid-template-columns:1fr}.wheelbox{width:min(88vw,390px)}}
+</style></head>
+<body><main>
+<header><div class="eyebrow">LE RENDEZ-VOUS DES AMIS</div><h1>PETIT BAC<span> !</span></h1><p>Tourne la roue, trouve un mot, marque le point.</p><div class="date" id="date"></div></header>
+<section class="panel">
+<div class="wheelbox"><div class="pointer"></div><canvas id="wheel" width="900" height="900" aria-label="Roue des catégories"></canvas><div class="hub">BAC<br>GO !</div></div>
+<button class="primary" id="spin">FAIRE TOURNER LA ROUE</button>
+<div class="result" aria-live="polite"><small id="caption">CATÉGORIE SÉLECTIONNÉE</small><h2 id="result">À toi de jouer !</h2><div class="letter" id="letter"></div></div>
+<div class="actions"><button class="subbtn" id="drawLetter">🔤 Tirer une lettre</button><button class="subbtn" id="again">↻ Réinitialiser</button></div>
+</section>
+<div class="cards"><div class="note"><b>🎯 Le défi du jour</b><p id="daily"></p></div><div class="note"><b>📏 Comment jouer ?</b><p>Choisissez une lettre et trouvez un mot qui correspond à la catégorie tirée. Le premier à répondre marque le point !</p></div></div>
+<footer>De nouvelles catégories chaque jour · Bonne partie !</footer></main>
+<script>
+const packs=[
+["Prénom","Animal","Pays","Ville","Métier","Fruit","Légume","Objet","Marque","Célébrité","Sport","Film ou série"],
+["Prénom","Animal marin","Capitale","Métier insolite","Plat","Couleur","Objet de la maison","Marque","Personnage fictif","Chanteur","Vêtement","Jeu vidéo"],
+["Prénom","Pays","Région","Animal","Insecte","Fleur","Boisson","Dessert","Instrument","Transport","Application","Mot anglais"],
+["Prénom","Ville","Monument","Sportif","Acteur","Livre","Série","Super-héros","Objet scolaire","Matière","Arbre","Chose qui vole"],
+["Animal","Pays chaud","Ville française","Métier","Aliment salé","Sucrerie","Objet rond","Marque de voiture","Objet de cuisine","Personnage historique","Équipe sportive","Mot drôle"],
+["Prénom","Animal dangereux","Île","Langue","Métier manuel","Fromage","Épice","Vêtement","Accessoire","Réseau social","Chose qui fait peur","Quelque chose de géant"],
+["Pays","Ville","Animal à quatre pattes","Oiseau","Poisson","Légume","Fruit exotique","Fast-food","Entreprise","Dessin animé","Objet connecté","Chose dehors"]
+];
+const palette=["#ff5798","#825cff","#18cbb4","#ffb52e","#4388ff","#f06b42","#a4d936","#d95cff","#20a4d8","#ff796e","#7bce75","#c28bff"];
+const now=new Date(),day=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000),cats=packs[((day%packs.length)+packs.length)%packs.length];
+document.getElementById("date").textContent=new Intl.DateTimeFormat("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(now);
+document.getElementById("daily").textContent="Aujourd’hui, "+cats.length+" catégories sont dans la roue. La sélection change automatiquement chaque jour.";
+const canvas=document.getElementById("wheel"),ctx=canvas.getContext("2d"),n=cats.length,arc=2*Math.PI/n;let rotation=0,busy=false;
+function draw(){const c=450,r=420;ctx.clearRect(0,0,900,900);for(let i=0;i<n;i++){const a=rotation+i*arc-Math.PI/2;ctx.beginPath();ctx.moveTo(c,c);ctx.arc(c,c,r,a,a+arc);ctx.closePath();ctx.fillStyle=palette[i%palette.length];ctx.fill();ctx.strokeStyle="#fff";ctx.lineWidth=5;ctx.stroke();ctx.save();ctx.translate(c,c);ctx.rotate(a+arc/2);ctx.textAlign="right";ctx.fillStyle="#fff";ctx.font="bold 27px system-ui";ctx.shadowColor="#0009";ctx.shadowBlur=4;let t=cats[i];if(t.length>19)t=t.slice(0,18)+"…";ctx.fillText(t,r-28,9);ctx.restore()}ctx.beginPath();ctx.arc(c,c,r,0,2*Math.PI);ctx.strokeStyle="#fff";ctx.lineWidth=12;ctx.stroke()}
+draw();
+const result=document.getElementById("result"),letter=document.getElementById("letter"),spin=document.getElementById("spin");
+function newLetter(){const abc="ABCDEFGHJKLMNPRSTUVW";letter.textContent="Lettre : "+abc[Math.floor(Math.random()*abc.length)]}
+document.getElementById("drawLetter").onclick=newLetter;
+spin.onclick=()=>{if(busy)return;busy=true;spin.disabled=true;result.textContent="La roue tourne…";letter.textContent="";const pick=Math.floor(Math.random()*n),cur=((rotation%(2*Math.PI))+2*Math.PI)%(2*Math.PI),target=((2*Math.PI-(pick+.5)*arc)%(2*Math.PI)+2*Math.PI)%(2*Math.PI),delta=((target-cur)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)+2*Math.PI*(5+Math.floor(Math.random()*3)),start=rotation,duration=4200,begin=performance.now();function frame(t){const p=Math.min(1,(t-begin)/duration),ease=1-Math.pow(1-p,4);rotation=start+delta*ease;draw();if(p<1)requestAnimationFrame(frame);else{rotation=((rotation%(2*Math.PI))+2*Math.PI)%(2*Math.PI);draw();result.textContent=cats[pick];document.getElementById("caption").textContent="CATÉGORIE TIRÉE";newLetter();busy=false;spin.disabled=false}}requestAnimationFrame(frame)};
+document.getElementById("again").onclick=()=>{result.textContent="À toi de jouer !";letter.textContent="";document.getElementById("caption").textContent="CATÉGORIE SÉLECTIONNÉE"};
+</script></body></html>
